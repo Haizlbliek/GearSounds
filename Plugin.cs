@@ -18,12 +18,12 @@ namespace GearSounds {
         private HUD.HUD hud;
         private Room roomToPlaySoundsIn;
         private bool shouldPlaySounds;
+        private int soundResetFrame;
+        private BodyChunk chunk = null;
 
         private HashSet<object> resetThings = new HashSet<object>();
         private object timeGetter;
         private bool hasTimeGetterBeenSet;
-
-        private int soundResetFrame;
         
         public delegate void orig_Update(object self);
         public bool valid = false;
@@ -71,7 +71,7 @@ namespace GearSounds {
                 return;
             }
 
-            hud.PlaySound(GearSound);
+            chunk.owner.room.PlaySound(GearSound, chunk);
 
             soundResetFrame = 10;
         }
@@ -164,6 +164,7 @@ namespace GearSounds {
 
             shouldPlaySounds = false;
             hasTimeGetterBeenSet = false;
+            chunk = self.firstChunk;
             timeGetter = null;
             roomToPlaySoundsIn = self.room;
             
