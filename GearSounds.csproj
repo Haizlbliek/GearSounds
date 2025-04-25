@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<RainWorldDllPath>C:\Program Files (x86)\Steam\steamapps\common\Rain World\RainWorld_Data\Managed\</RainWorldDllPath>
+		<BepInEx>C:\Program Files (x86)\Steam\steamapps\common\Rain World\BepInEx\</BepInEx>
+		<OutputDirectory>C:\Program Files (x86)\Steam\steamapps\workshop\content\312520\3469381984\plugins</OutputDirectory>
+	</PropertyGroup>
+
+	<Target Name="CopyData" AfterTargets="AfterBuild">
+		<Copy SourceFiles="./bin/Debug/net48/GearSounds.dll" DestinationFolder="$(OutputDirectory)" />
+		<Copy SourceFiles="./bin/Debug/net48/GearSounds.pdb" DestinationFolder="$(OutputDirectory)" />
+	</Target>
+
+	<PropertyGroup>
+		<TargetFramework>net48</TargetFramework>
+
+		<ImplicitUsings>disable</ImplicitUsings>
+
+		<Nullable>disable</Nullable>
+
+		<LangVersion>latest</LangVersion>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Reference Include="$(RainWorldDllPath)/Mono.Cecil.dll"><Private>false</Private></Reference>
+		<Reference Include="$(RainWorldDllPath)/MonoMod.Common.dll"><Private>false</Private></Reference>
+		<Reference Include="$(RainWorldDllPath)/MonoMod.RuntimeDetour.dll"><Private>false</Private></Reference>
+		<Reference Include="$(RainWorldDllPath)/MonoMod.Utils.dll"><Private>false</Private></Reference>
+		<Reference Include="$(RainWorldDllPath)/PUBLIC-Assembly-CSharp.dll"><Private>false</Private></Reference>
+		<Reference Include="$(RainWorldDllPath)/UnityEngine.dll"><Private>false</Private></Reference>
+		<Reference Include="$(RainWorldDllPath)/Unity.Mathematics.dll"><Private>false</Private></Reference>
+		<Reference Include="$(RainWorldDllPath)/UnityEngine.CoreModule.dll"><Private>false</Private></Reference>
+		<Reference Include="$(RainWorldDllPath)/UnityEngine.InputLegacyModule.dll"><Private>false</Private></Reference>
+		<Reference Include="$(BepInEx)/core/BepInEx.dll"><Private>false</Private></Reference>
+		<Reference Include="$(BepInEx)/plugins/HOOKS-Assembly-CSharp.dll"><Private>false</Private></Reference>
+		<Reference Include="$(BepInEx)/utils/PUBLIC-Assembly-CSharp.dll"><Private>false</Private></Reference>
+		<Reference Include="$(BepInEx)/core/0Harmony.dll"><Private>false</Private></Reference>
+		
+		<Reference Include="C:\Program Files (x86)\Steam\steamapps\workshop\content\312520\2920439476\plugins\RegionKit.dll"><Private>false</Private></Reference>
+	</ItemGroup>
+
+</Project>
