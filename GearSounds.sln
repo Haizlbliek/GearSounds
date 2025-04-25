@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34309.116
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GearSounds", "GearSounds.csproj", "{AC9784A1-2744-48EC-BB05-93CCDAF8BAA5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GearSounds", "GearSounds.csproj", "{56d98fee-0202-46b9-a973-df896811f645}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{AC9784A1-2744-48EC-BB05-93CCDAF8BAA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AC9784A1-2744-48EC-BB05-93CCDAF8BAA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AC9784A1-2744-48EC-BB05-93CCDAF8BAA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AC9784A1-2744-48EC-BB05-93CCDAF8BAA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56d98fee-0202-46b9-a973-df896811f645}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56d98fee-0202-46b9-a973-df896811f645}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56d98fee-0202-46b9-a973-df896811f645}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56d98fee-0202-46b9-a973-df896811f645}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {ACEF0742-205B-4D8E-97AC-244D81FDEF10}
+		SolutionGuid = {1ba9b209-d9bb-4d29-991f-346f82cad48a}
 	EndGlobalSection
 EndGlobal
