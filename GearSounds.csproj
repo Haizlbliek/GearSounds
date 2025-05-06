@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<RainWorldDllPath>C:\Program Files (x86)\Steam\steamapps\common\Rain World\RainWorld_Data\Managed\</RainWorldDllPath>
 		<BepInEx>C:\Program Files (x86)\Steam\steamapps\common\Rain World\BepInEx\</BepInEx>
-		<OutputDirectory>C:\Program Files (x86)\Steam\steamapps\workshop\content\312520\3469381984\plugins</OutputDirectory>
+		<OutputDirectory>C:\Program Files (x86)\Steam\steamapps\workshop\content\312520\3470270515\plugins</OutputDirectory>
 	</PropertyGroup>
 
 	<Target Name="CopyData" AfterTargets="AfterBuild">

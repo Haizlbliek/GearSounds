@@ -5,6 +5,12 @@ using System.Collections.Generic;
 using MonoMod.RuntimeDetour;
 using System.Reflection;
 using RegionKit.Modules.RoomSlideShow;
+using System.Security.Permissions;
+
+
+#pragma warning disable CS0618
+[assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
+#pragma warning restore CS0618
 
 namespace GearSounds {
     [BepInDependency("rwmodding.coreorg.rk", BepInDependency.DependencyFlags.SoftDependency)]
@@ -20,6 +26,7 @@ namespace GearSounds {
         private bool shouldPlaySounds;
         private int soundResetFrame;
         private BodyChunk chunk = null;
+        private VirtualMicrophone.DisembodiedSound sound = null;
 
         private HashSet<object> resetThings = new HashSet<object>();
         private object timeGetter;
@@ -35,7 +42,38 @@ namespace GearSounds {
 
         private SoundID GearSound;
 
-        public static void Playstate_Update(orig_Update orig, object self) {
+
+        public void OnEnable() {
+            Instance = this;
+            GearSound = new SoundID("gearspin", true);
+
+            playStateType = Type.GetType("RegionKit.Modules.RoomSlideShow.PlayState, RegionKit");
+            frameType = Type.GetType("RegionKit.Modules.RoomSlideShow.Frame, RegionKit");
+            currentStepProperty = playStateType.GetProperty("CurrentStep", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            slideshowRectDataIdProperty = typeof(SlideShowRectData).GetField("id", BindingFlags.Instance | BindingFlags.Public);
+
+            valid = playStateType != null && frameType != null && currentStepProperty != null && slideshowRectDataIdProperty != null;
+
+            if (!valid) {
+                Logger.LogWarning("One or more values are null. Please ensure RegionKit is installed.");
+                return;
+            }
+            
+            MethodInfo updateMethod = playStateType?.GetMethod("Update");
+
+            if (updateMethod != null) {
+                updateHook = new Hook(updateMethod, typeof(Plugin).GetMethod("Playstate_Update", BindingFlags.Static | BindingFlags.Public | BindingFlags.Instance));
+            } else {
+                Logger.LogError("Failed hooking to update method");
+            }
+
+            On.Player.Update += PlayerUpdateHook;
+            On.RainWorldGame.Update += RainWorldGameUpdate;
+            
+            Logger.LogInfo("Gear Sounds Loaded");
+        }
+
+		public static void Playstate_Update(orig_Update orig, object self) {
             PropertyInfo ticksInCurrentFrameProperty = self.GetType().GetProperty("TicksInCurrentFrame");
             PropertyInfo ticksSinceStartProperty = self.GetType().GetProperty("TicksSinceStart");
 
@@ -56,7 +94,7 @@ namespace GearSounds {
 
                 if (Instance.timeGetter != self) continue;
 
-                if (ticksSinceStart == 1) {
+                if (ticksSinceStart == 3) {
                     Instance.PlaySounds();
                 }
             }
@@ -70,8 +108,15 @@ namespace GearSounds {
                 Debug.LogError("roomToPlaySoundsIn or placedObjects is null");
                 return;
             }
-
-            chunk.owner.room.PlaySound(GearSound, chunk);
+            
+            VirtualMicrophone microphone = chunk?.owner?.abstractPhysicalObject?.world?.game?.cameras[0]?.virtualMicrophone;
+            if (microphone != null) {
+                SoundLoader.SoundData clip = microphone.GetSoundData(GearSound, -1);
+                if (microphone.SoundClipReady(clip)) {
+                    sound = new VirtualMicrophone.DisembodiedSound(microphone, clip, 0f, 1f, 1f, false, 0);
+                    microphone.soundObjects.Add(sound);
+                }
+            }
 
             soundResetFrame = 10;
         }
@@ -110,36 +155,6 @@ namespace GearSounds {
             }
         }
 
-        public void OnEnable() {
-            Instance = this;
-            GearSound = new SoundID("gearspin", true);
-
-            playStateType = Type.GetType("RegionKit.Modules.RoomSlideShow.PlayState, RegionKit");
-            frameType = Type.GetType("RegionKit.Modules.RoomSlideShow.Frame, RegionKit");
-            currentStepProperty = playStateType.GetProperty("CurrentStep", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-            slideshowRectDataIdProperty = typeof(SlideShowRectData).GetField("id", BindingFlags.Instance | BindingFlags.Public);
-
-            valid = playStateType != null && frameType != null && currentStepProperty != null && slideshowRectDataIdProperty != null;
-
-            if (!valid) {
-                Logger.LogWarning("One or more values are null. Please ensure RegionKit is installed.");
-                return;
-            }
-            
-            MethodInfo updateMethod = playStateType?.GetMethod("Update");
-
-            if (updateMethod != null) {
-                updateHook = new Hook(updateMethod, typeof(Plugin).GetMethod("Playstate_Update", BindingFlags.Static | BindingFlags.Public | BindingFlags.Instance));
-            } else {
-                Logger.LogError("Failed hooking to update method");
-            }
-
-            On.Player.Update += PlayerUpdateHook;
-            On.RainWorldGame.Update += RainWorldGameUpdate;
-            
-            Logger.LogInfo("Gear Sounds Loaded");
-        }
-
         void RainWorldGameUpdate(On.RainWorldGame.orig_Update orig, RainWorldGame self) {
             soundResetFrame--;
 
@@ -156,11 +171,17 @@ namespace GearSounds {
             }
         }
 
-		void PlayerUpdateHook(On.Player.orig_Update orig, Player self, bool eu) {
-			orig(self, eu);
+        void PlayerUpdateHook(On.Player.orig_Update orig, Player self, bool eu) {
+            orig(self, eu);
 
             if (roomToPlaySoundsIn == self.room) return;
             if (self.room == null) return;
+            
+            if (sound != null) {
+                sound.Stop();
+                sound.Destroy();
+            }
+            sound = null;
 
             shouldPlaySounds = false;
             hasTimeGetterBeenSet = false;
@@ -178,7 +199,7 @@ namespace GearSounds {
                     break;
                 }
             }
-		}
+        }
 
         public void OnDisable() {
             updateHook?.Dispose();
